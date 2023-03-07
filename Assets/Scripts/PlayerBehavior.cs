@@ -16,8 +16,8 @@ public class PlayerBehavior : MonoBehaviour
     public Transform rightCheck;
     public LayerMask groundLayer;
     public Animator animator;
-    public SpriteRenderer spriteRenderer;
-    private bool isFacingRight = true;
+    public Transform playercoord;
+    public Vector2 respawn;
 
     // Start is called before the first frame update
     void Start()
@@ -46,8 +46,15 @@ public class PlayerBehavior : MonoBehaviour
             }
         }   
         
-        animator.SetFloat("xVelocity", rb.velocity.x);
         animator.SetFloat("xSpeed", Math.Abs(rb.velocity.x));
+        animator.SetFloat("xVelocity", rb.velocity.x);
+        if (playercoord.position.y < -20) {
+            death();
+        } 
+    }
+
+    private void death() {
+        playercoord.SetPositionAndRotation(new Vector3(respawn.x, respawn.y, 0), new Quaternion(0,0,0,0));
     }
 
     private bool IsGrounded()
@@ -68,8 +75,6 @@ public class PlayerBehavior : MonoBehaviour
     {
         if ((rb.velocity.x < speed && horizontal > 0) || (rb.velocity.x > -speed && horizontal < 0)) {
             rb.AddForce(new Vector3(horizontal * accelleration, 0, 0), ForceMode2D.Impulse);
-        } else {
-            // rb.velocity = new Vector2(rb.velocity.x/2, rb.velocity.y);
         }
         if (jump == 1) {
             rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode2D.Impulse);
@@ -77,12 +82,12 @@ public class PlayerBehavior : MonoBehaviour
             animator.SetTrigger("jump");
         } else if (jump == 2) {
             rb.velocity = new Vector2(0f,0f);
-            rb.AddForce(new Vector3(0.7f * jumpForce, 0.7f * jumpForce, 0), ForceMode2D.Impulse);
+            rb.AddForce(new Vector3(0.5f * jumpForce, 0.85f * jumpForce, 0), ForceMode2D.Impulse);
             jump = 0;
             animator.SetTrigger("jump");
         } else if (jump == 3) {
             rb.velocity = new Vector2(0f,0f);
-            rb.AddForce(new Vector3(-0.7f * jumpForce, 0.7f * jumpForce, 0), ForceMode2D.Impulse);
+            rb.AddForce(new Vector3(-0.5f * jumpForce, 0.85f * jumpForce, 0), ForceMode2D.Impulse);
             jump = 0;
             animator.SetTrigger("jump");
         }
